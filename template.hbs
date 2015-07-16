@@ -1,0 +1,114 @@
+<nav class="navbar navbar-default" role="navigation">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="col-xs-6">
+                <span class="navbar-brand">
+                    <strong>{{t 'hotTopics_Title'}}</strong>
+                </span>
+            </div>
+            <div class="btn-group pull-right col-xs-6" role="group">
+            <h4 class="pull-right">
+                <a {{bind-attr class=":period-picker model.hotTopicConfig.periodIsDay:period-active"}} {{action "changePeriodStatus" "day"}} style="border-right:1px solid">{{t 'hotTopics_PeriodDay'}}</a>
+                <a {{bind-attr class=":period-picker model.hotTopicConfig.periodIsWeek:period-active"}} {{action "changePeriodStatus" "week"}} style="border-right:1px solid">{{t 'hotTopics_PeriodWeek'}}</a>
+                <a {{bind-attr class=":period-picker model.hotTopicConfig.periodIsMonth:period-active"}} {{action "changePeriodStatus" "custom_period"}} style="border-right:1px solid">{{t 'hotTopics_PeriodMonth'}}</a>
+                <a {{bind-attr class=":period-picker model.hotTopicConfig.periodIsQuarterly:period-active"}} {{action "changePeriodStatus" "custom_period_group"}}>{{t 'hotTopics_PeriodQuarter'}}</a>
+            </h4>
+            </div>
+        </div>
+        <div class="container-fluid">
+                <div class="dropdown pull-right" style="margin-right:20px;margin-bottom:15px;">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <img style="margin-right:5px;"class="pull-left" src="/dashboard-services/resources/lib/fizzback/images/{{model.hotTopicConfig.localeId}}.png" height="24" width="24">
+                        {{model.hotTopicConfig.localeText}}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        {{#each model.hotTopicLocale as |locale| }}
+                            <li>
+                                <a {{action "changeLocaleStatus" locale.icon locale.icontooltip }}>
+                                    {{locale.icontooltip}}
+                                    <img style="margin-right:5px;"class="pull-left" src="/dashboard-services/resources/lib/fizzback/images/{{locale.icon}}.png" height="24" width="24">
+                                </a>
+                            </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            
+        </div>
+    </div>
+</nav>
+<div class=" hot-topics container">
+    <div class="row">
+        <div class="col-sm-6 pull-left">
+            <div class="well">
+                <div class="container-fluid">
+                    <div class="pull-left">
+                        <h4>{{t 'hotTopics_TotalVerbatims'}} {{model.hotTopicsResult.totalVerbatims}} </h4>
+                    </div>
+                    <div class="pull-right">
+                        {{view "select" 
+                            value=model.hotTopicConfig.defaultSortBy
+                            class="form-control"
+                            content=model.hotTopicSortByType
+                            optionValuePath="content.value"
+                            optionLabelPath="content.text"
+                            selected= model.hotTopicConfig.defaultSortBy
+                        }}
+                    </div>
+                </div>
+            </div>
+            <div class="list-group">
+                {{#each clustersSorted as |cluster|}}
+                    <a {{bind-attr class=":list-group-item cluster.active:active" }} {{action "loadVerbatims" cluster}} style="display:inline-block; width:100%;">
+                        <div class="col-xs-3 pull-left">
+                            <h4 style="overflow:hidden; text-overflow:ellipsis; height:60px;" title="{{cluster.labels}}">
+                                {{#each cluster.labels as |label|}}
+                                    {{label}} /
+                                {{/each}}
+                            </h4>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="progress" style="height:70px;">
+                                <div class="progress-bar" style="width: {{get-percentage cluster.volume model.hotTopicsResult.totalVerbatims}}%;"></div>
+                            </div>
+                        </div>
+                        <div class="pull-right col-xs-3">
+                            <h3>{{get-percentage cluster.volume model.hotTopicsResult.totalVerbatims}} % </h3>
+                            <h5>
+                                {{#if cluster.clusterTrendIsNotZero}}
+                                    {{#if cluster.clusterTrendIsPositive}}
+                                        <i class="fa fa-caret-up fa-15x" style="color:green;"></i>
+                                        {{cluster.trendRoundedValue}} %
+                                    {{else}}
+                                        <i class="fa fa-caret-down fa-15x" style="color:red;"></i>
+                                        {{cluster.trendRoundedValue}} %
+                                    {{/if}}
+                                {{/if}}
+                            </h5>
+                        </div>
+                    </a>
+                {{/each}}
+            </div>
+        </div>
+        <div class="col-sm-6 pull-right" style="margin-bottom:50px;">
+            <div class="well">
+                <h3 style="white-space:nowrap; overflow:hidden; width:100%; text-overflow:ellipsis;"> {{t 'hotTopics_ClusterName'}}{{model.hotTopicVerbatim.clusterName}}</h3>
+                <h4> {{t 'hotTopics_TotalVerbatims'}}{{model.hotTopicVerbatim.totalVerbatims}}</h4>
+                {{kd-pagination resultsPerPage=3 data=model.hotTopicVerbatim.verbatims}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Begin page footer -->
+<div class="navbar navbar-default navbar-fixed-bottom">
+    <div class="panel-footer">
+        <!--<button class="navbar-btn btn pull-left" {{action "callExportCSVServices"}}>
+            <i class="fa fa-download"></i>
+            {{t 'pollingManager_SuspensionDateExportButton'}}
+        </button>-->
+        <button class="navbar-btn btn-default btn pull-right" {{action "close"}}>
+            <i class="fa fa-close"></i> {{t 'alertSelfServiceAlerts_Close'}}
+        </button>
+    </div>
+</div>
