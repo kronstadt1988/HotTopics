@@ -9,6 +9,7 @@ export default Ember.Route.extend({
             touchpointId: params.pTouchpointId
         });
         var localeConfig = self.store.find('hot-topic-locale');
+
         var hotTopicsResultPayload = config
             .then(function(results) {
                 return localeConfig.then(function(localeResults){
